@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import baseAddress from '../config/api';
 import ListItem from './ListItem';
-import "./List.css";
-
 class List extends Component {
 
     constructor(props) {
@@ -13,25 +11,35 @@ class List extends Component {
         }
     }
 
-    fetchData() {
-        fetch(baseAddress + "/getList")
-        .then(result => result.json())
-        .then((data) => {
+    fetchData = async () => {
+        try {
+            const response = await fetch(baseAddress + "/getList");
+            const data = await response.json();
+
+            console.log("done");
+            
             this.setState({
                 fetched: true,
                 items: data
             });
-        },
-        (error) => {
+        } catch (error) {
             this.setState({
                 fetched: true,
                 error
             });
-        })
+        }
     }
 
     componentDidMount() {
         this.fetchData();
+    }
+
+    checkboxHandler = async (id, completed) => {
+        const response = await fetch(baseAddress + "/updateItem", {
+            method: "POST",
+            headers: {"content-type": "application/json"},
+            body: JSON.stringify({ id: id, completed: completed})
+        });
     }
     
     render() {
@@ -42,10 +50,10 @@ class List extends Component {
         }
 
         return (
-            <div class='List d-flex justify-content-center flex-wrap'>
+            <div className='List d-flex justify-content-center flex-wrap'>
                 {
                     this.state.items.map((item) => (
-                        <ListItem item={item}></ListItem>
+                        <ListItem item={item} checkboxHandler={this.checkboxHandler}></ListItem>
                     ))
                 }
             </div>

@@ -17,10 +17,12 @@ class ListItem extends Component {
         })
     }
 
-    handleCheckbox() {
+    handleCheckbox = () => {
+        this.props.checkboxHandler(this.props.item.id, !this.state.completed);
+
         this.setState({
             completed: !this.state.completed
-        })
+        });
     }
 
     render() { 
@@ -31,7 +33,7 @@ class ListItem extends Component {
                     <Card.Title>{this.props.item.name}</Card.Title>
                     <Card.Text>{this.props.item.details}</Card.Text>
                     <Card.Text>
-                    Done <input type="checkbox" checked={this.state.completed} onClick={() => this.handleCheckbox()}></input>
+                    Done <input type="checkbox" checked={this.state.completed} onChange={this.handleCheckbox}></input>
                     </Card.Text>
                     <Button variant="primary">Edit</Button>
                 </Card.Body>

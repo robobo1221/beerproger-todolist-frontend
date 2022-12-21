@@ -1,3 +1,9 @@
 .App {
   text-align: center;
 }
+
+.List {
+  margin: auto;
+  width: 700px;
+  background-color: bisque;
+}
