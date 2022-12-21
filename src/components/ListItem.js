@@ -1,45 +1,76 @@
-import React, { Component } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import CloseButton from 'react-bootstrap/CloseButton';
 
-class ListItem extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            completed: false
-        }
-    }
+const state = {
+    name: "",
+    details: "",
+    completed: false,
+    image: null
+}
 
-    componentDidMount() {
-        this.setState({
-            completed: this.props.item.completed || this.props.item.completed == 1
-        })
-    }
+const ListItem = (props) => {
+    const [item, setItem] = useState(state)
+    const [editMode, setEditMode] = useState(false)
+    const {name, details, completed, image} = item
 
-    handleCheckbox = () => {
-        this.props.checkboxHandler(this.props.item.id, !this.state.completed);
+    useEffect(() => {
+        setItem({
+            name: props.item.name,
+            details: props.item.details,
+            completed: props.item.completed,
+            image: props.item.image
+        });
+    }, []);
 
-        this.setState({
-            completed: !this.state.completed
+    const handleCheckbox = () => {
+        props.checkboxHandler(props.item.id, !item.completed);
+
+        setItem({
+            ...item,
+            completed: !item.completed
         });
     }
 
-    render() { 
-        return (
-        <Card style={{ width: '18rem' }} className="m-2">
-            <Card.Img variant="top" src={this.props.item.image} />
-                <Card.Body>
-                    <Card.Title>{this.props.item.name}</Card.Title>
-                    <Card.Text>{this.props.item.details}</Card.Text>
-                    <Card.Text>
-                    Done <input type="checkbox" checked={this.state.completed} onChange={this.handleCheckbox}></input>
-                    </Card.Text>
-                    <Button variant="primary">Edit</Button>
-                </Card.Body>
-            </Card>
-        );
+    const uploadImageHandler = () => {
+
     }
+
+    const deleteHandler = () => {
+        props.deleteHandler(props.item.id);
+    }
+
+    const editHandler = () => {
+        setEditMode(true);
+    }
+
+    function renderImage() {
+        if (image === null) {
+            return (
+                <Button variant="secondary" onClick={uploadImageHandler}>Upload image</Button>
+            );
+        }
+
+        return <Card.Img variant="top" src={image} className="ItemImage"/>
+    } 
+
+    return (
+    <Card style={{ width: '18rem' }} className="m-2" onDoubleClick={editHandler}>
+        <Card.Header>
+            <Card.Title>{name}</Card.Title>
+        </Card.Header>
+        <Card.Body>
+            {renderImage()}
+            <Card.Text>{details}</Card.Text>
+            <Card.Text>
+            Done <input type="checkbox" checked={completed} onChange={handleCheckbox}></input>
+            </Card.Text>
+            <CloseButton className='CloseButton' onClick={deleteHandler} aria-label="close"></CloseButton>
+        </Card.Body>
+    </Card>
+    );
 }
  
 export default ListItem;

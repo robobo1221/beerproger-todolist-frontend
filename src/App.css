@@ -3,7 +3,17 @@
 }
 
 .List {
+  text-align: left;
   margin: auto;
   width: 700px;
   background-color: bisque;
+}
+
+.ItemImage {
+  max-width: 100px;
+  max-height: 100px;
+}
+
+.CloseButton {
+  text-align: right;
 }

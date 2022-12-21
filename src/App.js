@@ -8,6 +8,7 @@ import List from './components/List';
 function App() {
   return (
     <div className="App">
+        <h1>Todo-list</h1>
         <List></List>
     </div>
   );
