@@ -42,13 +42,15 @@ const ListItem = (props) => {
     }
 
     const editHandler = () => {
-        setEditMode(true);
+        setEditMode(!editMode);
     }
 
     const uploadHandler = async(id) => {
         // Retrieve new Image
         const response = await fetch(apiAddress + "/getItemById/" + id);
         const data = await response.json();
+
+        setEditMode(false);
 
         setItem({
             ...item,
@@ -57,26 +59,47 @@ const ListItem = (props) => {
     }
 
     function renderImage() {
-        if (image === null) {
-            return (
-                <ImageUploader item={item} uploadHandler={uploadHandler}></ImageUploader>
-            );
-        }
+        return editMode ? 
+        <ImageUploader item={item} uploadHandler={uploadHandler}></ImageUploader> :
 
-        return <Card.Img variant="top" src={image} className="ItemImage"/>
-    } 
+        image ?
+        <Card.Img variant="top" src={image} className="ItemImage"/> : <></>
+    }
+
+    function renderTitle() {
+        return editMode ?
+        <Card.Title>
+            <input type="text" defaultValue={name}></input>
+        </Card.Title> :
+        <Card.Title>{name}</Card.Title>
+    }
+
+    function renderDetails() {
+        return editMode ? 
+        <Card.Text>
+            <textarea defaultValue={details}></textarea>
+        </Card.Text> :
+        <Card.Text>{details}</Card.Text>;
+    }
+
+    function renderCheckbox() {
+        return (
+        <Card.Text>
+        <label for="completed"><b>Completed</b></label>
+        <input type="checkbox" name="completed" checked={completed} onChange={handleCheckbox}></input>
+        </Card.Text>
+        )
+    }
 
     return (
     <Card style={{ width: '18rem' }} className="m-2" onDoubleClick={editHandler}>
         <Card.Header>
-            <Card.Title>{name}</Card.Title>
+            {renderTitle()}
         </Card.Header>
         <Card.Body>
             {renderImage()}
-            <Card.Text>{details}</Card.Text>
-            <Card.Text>
-            Done <input type="checkbox" checked={completed} onChange={handleCheckbox}></input>
-            </Card.Text>
+            {renderDetails()}
+            {renderCheckbox()}
             <CloseButton className='CloseButton' onClick={deleteHandler} aria-label="close"></CloseButton>
         </Card.Body>
     </Card>

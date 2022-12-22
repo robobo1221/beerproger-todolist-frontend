@@ -33,7 +33,7 @@ const List = () => {
     }
 
     const changeCheckbox = async (id, completed) => {
-        const response = await fetch(apiAddress + "/updateItem", {
+        await fetch(apiAddress + "/updateItem", {
             method: "POST",
             headers: {"content-type": "application/json"},
             body: JSON.stringify({ id: id, completed: completed})
@@ -41,7 +41,7 @@ const List = () => {
     }
 
     const deleteItem = async (id) => {
-        const response = await fetch(apiAddress + "/deleteItemById/" + String(id), {
+        await fetch(apiAddress + "/deleteItemById/" + String(id), {
             method: "DELETE"
         });
 
