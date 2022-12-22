@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react';
+import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import apiAddress from '../config/api';
 
@@ -7,7 +7,6 @@ const ImageUploader = (props) => {
     const item = props.item;
 
     const imageHandler = (e) => {
-        console.log(e.target.files[0]);
         setImage(e.target.files[0]);
     }
 

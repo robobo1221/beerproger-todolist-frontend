@@ -14,6 +14,7 @@
   max-height: 100px;
 }
 
-.CloseButton {
-  text-align: right;
+.ItemControl {
+  display: flex;
+  justify-content: space-between;
 }

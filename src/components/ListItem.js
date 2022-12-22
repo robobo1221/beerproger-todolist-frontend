@@ -5,8 +5,11 @@ import CloseButton from 'react-bootstrap/CloseButton';
 import ImageUploader from './ImageUploader';
 import apiAddress from '../config/api';
 
+import {BiDotsHorizontalRounded, BiCheckCircle, BiTrash} from "react-icons/bi";
+import {CgClose} from "react-icons/cg";
+
 const state = {
-    id: 0,
+    id: -1,
     name: "",
     details: "",
     completed: false,
@@ -26,7 +29,13 @@ const ListItem = (props) => {
             completed: props.item.completed,
             image: props.item.image
         });
-    }, []);
+
+        // Make sure the user always has to insert their name.
+        if (props.item.name === '') {
+            setEditMode(true);
+        }
+
+    }, [props.item.id, props.item.name, props.item.details, props.item.completed, props.item.image]);
 
     const handleCheckbox = () => {
         props.checkboxHandler(props.item.id, !completed);
@@ -41,21 +50,70 @@ const ListItem = (props) => {
         props.deleteHandler(props.item.id);
     }
 
-    const editHandler = () => {
+    const editHandler = async() => {
+        if (name.trim() === '' && editMode) {
+            return;
+        }
+
         setEditMode(!editMode);
     }
 
     const uploadHandler = async(id) => {
+        if (name.trim() === '') {
+            return;
+        }
         // Retrieve new Image
         const response = await fetch(apiAddress + "/getItemById/" + id);
         const data = await response.json();
-
+        
         setEditMode(false);
 
         setItem({
             ...item,
             image: data.image
         });
+    }
+
+    const editTileHandler = (e) => {
+        setItem({
+            ...item,
+            name: e.target.value
+        });
+    }
+
+    const editDetailsHandler = (e) => {
+        setItem({
+            ...item,
+            details: e.target.value
+        });
+    }
+
+    const finishEdit = () => {
+        if (name === '') {
+            return;
+        }
+
+        // Check if the the item is a new one.
+        // No need to wait here
+        if (!props.item.id) {
+            fetch(apiAddress + "/addItem", {
+                method: "POST",
+                headers: {"content-type": "application/json"},
+                body: JSON.stringify({ name: name, details: details, image: image})
+            });
+        } else {
+            fetch(apiAddress + "/updateItem", {
+                method: "POST",
+                headers: {"content-type": "application/json"},
+                body: JSON.stringify({ id: id, name: name, details: details})
+            });
+        }
+
+        setEditMode(false);
+    }
+
+    const closeEdit = () => {
+        setEditMode(false);
     }
 
     function renderImage() {
@@ -69,7 +127,7 @@ const ListItem = (props) => {
     function renderTitle() {
         return editMode ?
         <Card.Title>
-            <input type="text" defaultValue={name}></input>
+            <input type="text" defaultValue={name} onChange={editTileHandler}></input>
         </Card.Title> :
         <Card.Title>{name}</Card.Title>
     }
@@ -77,22 +135,35 @@ const ListItem = (props) => {
     function renderDetails() {
         return editMode ? 
         <Card.Text>
-            <textarea defaultValue={details}></textarea>
+            <textarea defaultValue={details} onChange={editDetailsHandler}></textarea>
         </Card.Text> :
         <Card.Text>{details}</Card.Text>;
     }
 
     function renderCheckbox() {
-        return (
+        return editMode ? <></> :
         <Card.Text>
-        <label for="completed"><b>Completed</b></label>
+        {/* <label for="completed"><b>Completed</b></label> */}
         <input type="checkbox" name="completed" checked={completed} onChange={handleCheckbox}></input>
         </Card.Text>
-        )
+        
+    }
+
+    function renderButtons() {
+        return editMode ?
+        <div className="ItemControl">
+            <CgClose size={25} onClick={closeEdit} aria-label="Close" color="gray"></CgClose>
+            <BiCheckCircle size={25} onClick={finishEdit} aria-label="Done" color="gray"></BiCheckCircle>
+        </div>
+        :
+        <div className="ItemControl">
+            <BiTrash size={25} onClick={deleteHandler} aria-label="Delete" color="gray"></BiTrash>
+            <BiDotsHorizontalRounded size={25} onClick={editHandler} aria-label="Settings" color="gray"></BiDotsHorizontalRounded>
+        </div>
     }
 
     return (
-    <Card style={{ width: '18rem' }} className="m-2" onDoubleClick={editHandler}>
+    <Card style={{ width: '18rem' }} className="m-2">
         <Card.Header>
             {renderTitle()}
         </Card.Header>
@@ -100,7 +171,7 @@ const ListItem = (props) => {
             {renderImage()}
             {renderDetails()}
             {renderCheckbox()}
-            <CloseButton className='CloseButton' onClick={deleteHandler} aria-label="close"></CloseButton>
+            {renderButtons()}
         </Card.Body>
     </Card>
     );
