@@ -1,5 +1,5 @@
 import React, { Component, useEffect, useState } from 'react'
-import baseAddress from '../config/api';
+import apiAddress from '../config/api';
 import ListItem from './ListItem';
 
 const state = {
@@ -17,7 +17,7 @@ const List = () => {
 
     const fetchData = async () => {
         try {
-            const response = await fetch(baseAddress + "/getList");
+            const response = await fetch(apiAddress + "/getList");
             const data = await response.json();
             
             setList({
@@ -33,7 +33,7 @@ const List = () => {
     }
 
     const changeCheckbox = async (id, completed) => {
-        const response = await fetch(baseAddress + "/updateItem", {
+        const response = await fetch(apiAddress + "/updateItem", {
             method: "POST",
             headers: {"content-type": "application/json"},
             body: JSON.stringify({ id: id, completed: completed})
@@ -41,7 +41,7 @@ const List = () => {
     }
 
     const deleteItem = async (id) => {
-        const response = await fetch(baseAddress + "/deleteItemById/" + String(id), {
+        const response = await fetch(apiAddress + "/deleteItemById/" + String(id), {
             method: "DELETE"
         });
 

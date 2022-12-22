@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
 
-import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import CloseButton from 'react-bootstrap/CloseButton';
+import ImageUploader from './ImageUploader';
+import apiAddress from '../config/api';
 
 const state = {
+    id: 0,
     name: "",
     details: "",
     completed: false,
@@ -14,10 +16,11 @@ const state = {
 const ListItem = (props) => {
     const [item, setItem] = useState(state)
     const [editMode, setEditMode] = useState(false)
-    const {name, details, completed, image} = item
+    const {id, name, details, completed, image} = item
 
     useEffect(() => {
         setItem({
+            id: props.item.id,
             name: props.item.name,
             details: props.item.details,
             completed: props.item.completed,
@@ -26,16 +29,12 @@ const ListItem = (props) => {
     }, []);
 
     const handleCheckbox = () => {
-        props.checkboxHandler(props.item.id, !item.completed);
+        props.checkboxHandler(props.item.id, !completed);
 
         setItem({
             ...item,
-            completed: !item.completed
+            completed: !completed
         });
-    }
-
-    const uploadImageHandler = () => {
-
     }
 
     const deleteHandler = () => {
@@ -46,10 +45,21 @@ const ListItem = (props) => {
         setEditMode(true);
     }
 
+    const uploadHandler = async(id) => {
+        // Retrieve new Image
+        const response = await fetch(apiAddress + "/getItemById/" + id);
+        const data = await response.json();
+
+        setItem({
+            ...item,
+            image: data.image
+        });
+    }
+
     function renderImage() {
         if (image === null) {
             return (
-                <Button variant="secondary" onClick={uploadImageHandler}>Upload image</Button>
+                <ImageUploader item={item} uploadHandler={uploadHandler}></ImageUploader>
             );
         }
 
