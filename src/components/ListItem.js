@@ -37,8 +37,13 @@ const ListItem = (props) => {
 
     }, [props.item.id, props.item.name, props.item.details, props.item.completed, props.item.image]);
 
-    const handleCheckbox = () => {
-        props.checkboxHandler(props.item.id, !completed);
+    const handleCheckbox = async () => {
+        // No need to wait here
+        fetch(apiAddress + "/updateItem", {
+            method: "POST",
+            headers: {"content-type": "application/json"},
+            body: JSON.stringify({ id: id, completed: !completed})
+        });
 
         setItem({
             ...item,
@@ -46,7 +51,14 @@ const ListItem = (props) => {
         });
     }
 
-    const deleteHandler = () => {
+    const deleteHandler = async () => {
+        // Check if item is new item not registered in the database.
+        if (id) {
+            await fetch(apiAddress + "/deleteItemById/" + String(id), {
+                method: "DELETE"
+            });
+        }
+        
         props.deleteHandler(props.item.id);
     }
 
@@ -88,20 +100,30 @@ const ListItem = (props) => {
         });
     }
 
-    const finishEdit = () => {
+    const finishEdit = async () => {
         if (name === '') {
             return;
         }
 
         // Check if the the item is a new one.
-        // No need to wait here
-        if (!props.item.id) {
-            fetch(apiAddress + "/addItem", {
+        if (!item.id) {
+            const response = await fetch(apiAddress + "/addItem", {
                 method: "POST",
                 headers: {"content-type": "application/json"},
                 body: JSON.stringify({ name: name, details: details, image: image})
             });
+            const data = await response.json();
+            
+            // Update id
+            
+            if (data.id) {
+                setItem({
+                    ...item,
+                    id: data.id
+                });
+            }
         } else {
+            // No need to wait here
             fetch(apiAddress + "/updateItem", {
                 method: "POST",
                 headers: {"content-type": "application/json"},
@@ -112,12 +134,19 @@ const ListItem = (props) => {
         setEditMode(false);
     }
 
-    const closeEdit = () => {
+    const closeEdit = async () => {
+        if (item.id) {
+            const response = await fetch(apiAddress + "/getItemById/" + id);
+            const data = await response.json();
+
+            setItem(data);
+        }
+
         setEditMode(false);
     }
 
     function renderImage() {
-        return editMode ? 
+        return (editMode && id) ? 
         <ImageUploader item={item} uploadHandler={uploadHandler}></ImageUploader> :
 
         image ?
@@ -146,7 +175,6 @@ const ListItem = (props) => {
         {/* <label for="completed"><b>Completed</b></label> */}
         <input type="checkbox" name="completed" checked={completed} onChange={handleCheckbox}></input>
         </Card.Text>
-        
     }
 
     function renderButtons() {

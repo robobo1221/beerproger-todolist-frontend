@@ -41,22 +41,7 @@ const List = () => {
         }
     }
 
-    const changeCheckbox = async (id, completed) => {
-        await fetch(apiAddress + "/updateItem", {
-            method: "POST",
-            headers: {"content-type": "application/json"},
-            body: JSON.stringify({ id: id, completed: completed})
-        });
-    }
-
     const deleteItem = async (id) => {
-        // Check if item is new item not registered in the database.
-        if (id) {
-            await fetch(apiAddress + "/deleteItemById/" + String(id), {
-                method: "DELETE"
-            });
-        }
-
         const newItems = items.filter(listItem => listItem.id !== id);
         setList({
             ...list,
@@ -82,7 +67,7 @@ const List = () => {
             <div className='List d-flex justify-content-center flex-wrap'>
             {
                 items.map((item) => (
-                    <ListItem item={item} checkboxHandler={changeCheckbox} deleteHandler={deleteItem} key={item.id}></ListItem>
+                    <ListItem item={item} deleteHandler={deleteItem} key={item.id}></ListItem>
                 ))
             }
 
