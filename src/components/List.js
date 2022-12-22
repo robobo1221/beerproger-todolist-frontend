@@ -49,6 +49,16 @@ const List = () => {
         });
     }
 
+    const addItem = (item) => {
+        items.pop();
+        items.push(item);
+
+        setList({
+            ...list,
+            items: items
+        })
+    }
+
     const createItem = () => {
         items.push(newItem);
 
@@ -67,7 +77,7 @@ const List = () => {
             <div className='List d-flex justify-content-center flex-wrap'>
             {
                 items.map((item) => (
-                    <ListItem item={item} deleteHandler={deleteItem} key={item.id}></ListItem>
+                    <ListItem item={item} addHandler={addItem} deleteHandler={deleteItem} key={item.id}></ListItem>
                 ))
             }
 

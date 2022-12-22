@@ -53,13 +53,14 @@ const ListItem = (props) => {
 
     const deleteHandler = async () => {
         // Check if item is new item not registered in the database.
+
         if (id) {
             await fetch(apiAddress + "/deleteItemById/" + String(id), {
                 method: "DELETE"
             });
         }
         
-        props.deleteHandler(props.item.id);
+        props.deleteHandler(id);
     }
 
     const editHandler = async() => {
@@ -106,25 +107,26 @@ const ListItem = (props) => {
         }
 
         // Check if the the item is a new one.
-        if (!item.id) {
+        if (!id) {
             const response = await fetch(apiAddress + "/addItem", {
                 method: "POST",
                 headers: {"content-type": "application/json"},
                 body: JSON.stringify({ name: name, details: details, image: image})
             });
             const data = await response.json();
-            
-            // Update id
-            
-            if (data.id) {
-                setItem({
-                    ...item,
-                    id: data.id
-                });
-            }
+
+            setItem({
+                ...item,
+                id: data.id
+            });
+
+            props.addHandler({
+                ...item,
+                id: data.id
+            });
         } else {
             // No need to wait here
-            fetch(apiAddress + "/updateItem", {
+            await fetch(apiAddress + "/updateItem", {
                 method: "POST",
                 headers: {"content-type": "application/json"},
                 body: JSON.stringify({ id: id, name: name, details: details})
