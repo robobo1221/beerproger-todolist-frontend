@@ -87,7 +87,7 @@ const List = (props) => {
                 ))
             }
 
-            <BiMessageSquareAdd size={30} onClick={createItem}></BiMessageSquareAdd>
+            <BiMessageSquareAdd className="Buttons" size={30} onClick={createItem}></BiMessageSquareAdd>
             </div>
         )
         :

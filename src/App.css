@@ -35,3 +35,12 @@
   transform: scale(150%);
   margin-top: 10px;
 }
+
+.Buttons {
+  cursor: pointer;
+  border-radius: 100%;
+}
+
+.Buttons:hover {
+  background-color: rgba(0, 0, 0, 0.1);
+}

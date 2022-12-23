@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import apiAddress from '../config/api';
 import eventBus from '../utility/EventBus';
+import { BiCloudUpload } from 'react-icons/bi'
 
 const ImageUploader = (props) => {
     const [image, setImage] = useState('');
@@ -49,7 +50,7 @@ const ImageUploader = (props) => {
     return ( 
         <div className="fileUploader">
             <input type="file" id="image" accept="image/*" onChange={imageHandler}></input>
-            <Button variant="danger" onClick={uploadHandler} className="mt-1 mb-1">Upload image</Button>
+            <BiCloudUpload className="Buttons mt-1 mb-3" color="gray" size={30} onClick={uploadHandler}></BiCloudUpload>
         </div>
     );
 }

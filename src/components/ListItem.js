@@ -243,13 +243,13 @@ const ListItem = (props) => {
     function renderButtons() {
         return editMode ?
         <div className="ItemControl">
-            <CgClose size={25} onClick={closeEdit} aria-label="Close" color="gray"></CgClose>
-            <BiCheckCircle size={25} onClick={finishEdit} aria-label="Done" color="gray"></BiCheckCircle>
+            <CgClose className="Buttons" size={25} onClick={closeEdit} aria-label="Close" color="gray"></CgClose>
+            <BiCheckCircle className="Buttons" size={25} onClick={finishEdit} aria-label="Done" color="gray"></BiCheckCircle>
         </div>
         :
         <div className="ItemControl">
-            <BiTrash size={25} onClick={deleteHandler} aria-label="Delete" color="gray"></BiTrash>
-            <BiDotsHorizontalRounded size={25} onClick={editHandler} aria-label="Settings" color="gray"></BiDotsHorizontalRounded>
+            <BiTrash className="Buttons" size={25} onClick={deleteHandler} aria-label="Delete" color="gray"></BiTrash>
+            <BiDotsHorizontalRounded className="Buttons" size={25} onClick={editHandler} aria-label="Settings" color="gray"></BiDotsHorizontalRounded>
         </div>
     }
 
