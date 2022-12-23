@@ -227,7 +227,7 @@ const ListItem = (props) => {
     function renderDetails() {
         return editMode ? 
         <Card.Text>
-            <textarea defaultValue={details} onChange={editDetailsHandler}></textarea>
+            <textarea defaultValue={details} onChange={editDetailsHandler} className='DetailsArea'></textarea>
         </Card.Text> :
         <Card.Text>{details}</Card.Text>;
     }
