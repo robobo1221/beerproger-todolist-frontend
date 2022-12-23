@@ -39,35 +39,45 @@ const ListItem = (props) => {
 
     const handleCheckbox = async () => {
         // No need to wait here
-        fetch(apiAddress + "/updateItem", {
-            method: "POST",
-            headers: {"content-type": "application/json"},
-            body: JSON.stringify({ id: id, completed: !completed})
-        })
-        .then((response) => {
-            if (!response.ok) {
-                const json = response.json();
-                props.messageHandler({message: json.message, type:'danger'});
-            }
-        });
+        try {
+            fetch(apiAddress + "/updateItem", {
+                method: "POST",
+                headers: {"content-type": "application/json"},
+                body: JSON.stringify({ id: id, completed: !completed})
+            })
+            .then((response) => {
+                if (!response.ok) {
+                    const json = response.json();
+                    eventBus.dispatch("error", {message: json.message, type:'danger'});
+                    return;
+                }
+            });
 
-        setItem({
-            ...item,
-            completed: !completed
-        });
+            setItem({
+                ...item,
+                completed: !completed
+            });
+        } catch (e) {
+            eventBus.dispatch("error", {message: "Failed to fetch. Is the backend server running?", type:'danger'});
+        }
     }
 
     const deleteHandler = async () => {
         // Check if item is new item not registered in the database.
 
         if (id) {
-            const response = await fetch(apiAddress + "/deleteItemById/" + String(id), {
-                method: "DELETE"
-            });
+            try {
+                const response = await fetch(apiAddress + "/deleteItemById/" + String(id), {
+                    method: "DELETE"
+                });
 
-            if (!response.ok) {
-                const data = await response.json();
-                eventBus.dispatch("error", {message: data.message, type:'danger'});
+                if (!response.ok) {
+                    const data = await response.json();
+                    eventBus.dispatch("error", {message: data.message, type:'danger'});
+                    return;
+                }
+            } catch (e) {
+                eventBus.dispatch("error", {message: "Failed to delete. Is the backend server running?", type:'danger'});
                 return;
             }
         }
@@ -77,6 +87,7 @@ const ListItem = (props) => {
 
     const editHandler = async() => {
         if (name.trim() === '' && editMode) {
+            eventBus.dispatch("error", {message: "Please fill in a name.", type:'danger'});
             return;
         }
 
@@ -85,23 +96,28 @@ const ListItem = (props) => {
 
     const uploadHandler = async(id) => {
         if (name.trim() === '') {
+            eventBus.dispatch("error", {message: "Please fill in a name.", type:'danger'});
             return;
         }
-        // Retrieve new Image
-        const response = await fetch(apiAddress + "/getItemById/" + id);
-        const data = await response.json();
+        try {
+            // Retrieve new Image
+            const response = await fetch(apiAddress + "/getItemById/" + id);
+            const data = await response.json();
 
-        if (!response.ok) {
-            eventBus.dispatch("error", {message: data.message, type:'danger'});
-            return;
+            if (!response.ok) {
+                eventBus.dispatch("error", {message: data.message, type:'danger'});
+                return;
+            }
+            
+            setEditMode(false);
+
+            setItem({
+                ...item,
+                image: data.image
+            });
+        } catch (e) {
+            eventBus.dispatch("error", {message: "Failed to get new image. Is the backend server running?", type:'danger'});
         }
-        
-        setEditMode(false);
-
-        setItem({
-            ...item,
-            image: data.image
-        });
     }
 
     const editTileHandler = (e) => {
@@ -124,41 +140,47 @@ const ListItem = (props) => {
             return;
         }
 
-        // Check if the the item is a new one.
-        if (!id) {
-            const response = await fetch(apiAddress + "/addItem", {
-                method: "POST",
-                headers: {"content-type": "application/json"},
-                body: JSON.stringify({ name: name, details: details, image: image})
-            });
-            const data = await response.json();
+        // Check if the the item is new.
 
-            if (!response.ok) {
-                eventBus.dispatch("error", {message: data.message, type:'danger'});
-                return;
+        try {
+            if (!id) {
+                const response = await fetch(apiAddress + "/addItem", {
+                    method: "POST",
+                    headers: {"content-type": "application/json"},
+                    body: JSON.stringify({ name: name, details: details, image: image})
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    eventBus.dispatch("error", {message: data.message, type:'danger'});
+                    return;
+                }
+
+                setItem({
+                    ...item,
+                    id: data.id
+                });
+
+                props.addHandler({
+                    ...item,
+                    id: data.id
+                }, props.listId);
+            } else {
+                const response = await fetch(apiAddress + "/updateItem", {
+                    method: "POST",
+                    headers: {"content-type": "application/json"},
+                    body: JSON.stringify({ id: id, name: name, details: details})
+                });
+
+                if (!response.ok) {
+                    const data = response.json();
+                    eventBus.dispatch("error", {message: data.message, type:'danger'});
+                    return;
+                }
             }
-
-            setItem({
-                ...item,
-                id: data.id
-            });
-
-            props.addHandler({
-                ...item,
-                id: data.id
-            }, props.listId);
-        } else {
-            const response = await fetch(apiAddress + "/updateItem", {
-                method: "POST",
-                headers: {"content-type": "application/json"},
-                body: JSON.stringify({ id: id, name: name, details: details})
-            });
-
-            if (!response.ok) {
-                const data = response.json();
-                eventBus.dispatch("error", {message: data.message, type:'danger'});
-                return;
-            }
+        } catch (e) {
+            eventBus.dispatch("error", {message: "Failed to fetch. Is the backend server running?", type:'danger'});
+            return;
         }
 
         setEditMode(false);
@@ -166,15 +188,19 @@ const ListItem = (props) => {
 
     const closeEdit = async () => {
         if (item.id) {
-            const response = await fetch(apiAddress + "/getItemById/" + id);
-            const data = await response.json();
+            try {
+                const response = await fetch(apiAddress + "/getItemById/" + id);
+                const data = await response.json();
 
-            if (!response.ok) {
-                eventBus.dispatch("error", {message: data.message, type:'danger'});
-                return;
+                if (!response.ok) {
+                    eventBus.dispatch("error", {message: data.message, type:'danger'});
+                    return;
+                }
+
+                setItem(data);
+            } catch (e) {
+                eventBus.dispatch("error", {message: "Failed to fetch. Is the backend server running?", type:'danger'});
             }
-
-            setItem(data);
         } else {
             deleteHandler();
         }

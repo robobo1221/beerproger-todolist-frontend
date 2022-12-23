@@ -27,14 +27,19 @@ const ImageUploader = (props) => {
         formData.append('image', image);
         formData.append('id', item.id);
 
-        const response = await fetch(apiAddress + "/updateItem", {
-            method: "POST",
-            body: formData
-        });
+        try {
+            const response = await fetch(apiAddress + "/updateItem", {
+                method: "POST",
+                body: formData
+            });
 
-        if (!response.ok) {
-            const json = response.json();
-            eventBus.dispatch("error", {message: json.message, type:'danger'});
+            if (!response.ok) {
+                const json = response.json();
+                eventBus.dispatch("error", {message: json.message, type:'danger'});
+                return;
+            }
+        } catch {
+            eventBus.dispatch("error", {message: "Failed to upload image. Is the backend server running?", type:'danger'});
             return;
         }
 
