@@ -219,7 +219,7 @@ const ListItem = (props) => {
     function renderTitle() {
         return editMode ?
         <Card.Title>
-            <input type="text" defaultValue={name} onChange={editTileHandler} placeholder="Name"></input>
+            <input type="text" defaultValue={name} onChange={editTileHandler} placeholder="Name" className='ItemInput'></input>
         </Card.Title> :
         <Card.Title>{name}</Card.Title>
     }

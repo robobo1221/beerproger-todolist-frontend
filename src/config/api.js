@@ -1,3 +1,3 @@
-const apiAddress = "http://127.0.0.1:8000/api";
+const apiAddress = "http://80.114.0.15:8000/api";
 
 export default apiAddress;

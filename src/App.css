@@ -5,7 +5,7 @@
 .List {
   text-align: left;
   margin: auto;
-  width: 700px;
+  width: 40%;
   background-color: bisque;
 }
 
@@ -43,4 +43,9 @@
 
 .Buttons:hover {
   background-color: rgba(0, 0, 0, 0.1);
+}
+
+.ItemInput {
+  width: 100%;
+  display: block;
 }
