@@ -219,7 +219,7 @@ const ListItem = (props) => {
     function renderTitle() {
         return editMode ?
         <Card.Title>
-            <input type="text" defaultValue={name} onChange={editTileHandler}></input>
+            <input type="text" defaultValue={name} onChange={editTileHandler} placeholder="Name"></input>
         </Card.Title> :
         <Card.Title>{name}</Card.Title>
     }
@@ -227,7 +227,7 @@ const ListItem = (props) => {
     function renderDetails() {
         return editMode ? 
         <Card.Text>
-            <textarea defaultValue={details} onChange={editDetailsHandler} className='DetailsArea'></textarea>
+            <textarea defaultValue={details} onChange={editDetailsHandler} className='DetailsArea' placeholder='details'></textarea>
         </Card.Text> :
         <Card.Text>{details}</Card.Text>;
     }
