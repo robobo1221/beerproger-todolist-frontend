@@ -82,7 +82,7 @@ const List = (props) => {
                     <ListItem 
                     item={item} addHandler={addItem}
                     deleteHandler={deleteItem}
-                    key={item.id}
+                    key={index}
                     listId={index}></ListItem>
                 ))
             }
