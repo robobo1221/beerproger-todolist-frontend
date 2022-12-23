@@ -236,7 +236,7 @@ const ListItem = (props) => {
         return editMode ? <></> :
         <Card.Text>
         {/* <label for="completed"><b>Completed</b></label> */}
-        <input type="checkbox" name="completed" className='checkboxCompleted' checked={completed} onChange={handleCheckbox}></input>
+        <input type="checkbox" name="completed" className='CheckboxCompleted' checked={completed} onChange={handleCheckbox}></input>
         </Card.Text>
     }
 
@@ -254,8 +254,8 @@ const ListItem = (props) => {
     }
 
     return (
-    <Card style={{ width: '18rem' }} className="m-2">
-        <Card.Header className='ItemControl'>
+    <Card style={{ width: '18rem' }} className="m-2 shadow">
+        <Card.Header className='ItemControl shadow'>
             {renderTitle()}
             {renderCheckbox()}
         </Card.Header>

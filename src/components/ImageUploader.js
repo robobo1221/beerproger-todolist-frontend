@@ -49,7 +49,7 @@ const ImageUploader = (props) => {
     return ( 
         <div className="fileUploader">
             <input type="file" id="image" accept="image/*" onChange={imageHandler}></input>
-            <Button variant="secondary" onClick={uploadHandler}>Upload image</Button>
+            <Button variant="danger" onClick={uploadHandler} className="mt-1 mb-1">Upload image</Button>
         </div>
     );
 }

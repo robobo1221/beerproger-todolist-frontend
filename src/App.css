@@ -27,7 +27,7 @@
   z-index: 999;
 }
 
-.checkboxCompleted {
+.CheckboxCompleted {
   transform: scale(150%);
   margin-top: 10px;
 }
