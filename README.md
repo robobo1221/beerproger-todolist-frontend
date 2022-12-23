@@ -8,7 +8,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
-### 'npm install'
+### `npm install`
 
 Installs all the required packages for this application.
 
