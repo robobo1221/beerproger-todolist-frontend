@@ -3,6 +3,7 @@ import apiAddress from '../config/api';
 import ListItem from './ListItem';
 import Button from 'react-bootstrap/Button';
 import {BiMessageSquareAdd} from "react-icons/bi";
+import eventBus from '../utility/EventBus';
 
 const state = {
     fetched: false,
@@ -16,7 +17,7 @@ const newItem = {
     image: null
 }
 
-const List = () => {
+const List = (props) => {
     const [list, setList] = useState(state)
     const {fetched, items} = list
 
@@ -28,16 +29,18 @@ const List = () => {
         try {
             const response = await fetch(apiAddress + "/getList");
             const data = await response.json();
-            
+
+            if (!response.ok) {
+                eventBus.dispatch("error", {message: data.message, type:'danger'});
+                return;
+            }
+        
             setList({
                 fetched: true,
                 items: data
             });
-        } catch (error) {
-            setList({
-                fetched: true,
-                error
-            });
+        } catch (e) {
+            eventBus.dispatch("error", {message: "Failed to fetch. Is the backend server running?", type:'danger'});
         }
     }
 
@@ -49,9 +52,8 @@ const List = () => {
         });
     }
 
-    const addItem = (item) => {
-        items.pop();
-        items.push(item);
+    const addItem = (item, listId) => {
+        items[listId] = item;
 
         setList({
             ...list,
@@ -76,8 +78,12 @@ const List = () => {
         (
             <div className='List d-flex justify-content-center flex-wrap'>
             {
-                items.map((item) => (
-                    <ListItem item={item} addHandler={addItem} deleteHandler={deleteItem} key={item.id}></ListItem>
+                items.map((item, index) => (
+                    <ListItem 
+                    item={item} addHandler={addItem}
+                    deleteHandler={deleteItem}
+                    key={item.id}
+                    listId={index}></ListItem>
                 ))
             }
 

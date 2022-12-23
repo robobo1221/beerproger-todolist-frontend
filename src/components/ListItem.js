@@ -7,6 +7,7 @@ import apiAddress from '../config/api';
 
 import {BiDotsHorizontalRounded, BiCheckCircle, BiTrash} from "react-icons/bi";
 import {CgClose} from "react-icons/cg";
+import eventBus from '../utility/EventBus';
 
 const state = {
     id: -1,
@@ -43,6 +44,12 @@ const ListItem = (props) => {
             method: "POST",
             headers: {"content-type": "application/json"},
             body: JSON.stringify({ id: id, completed: !completed})
+        })
+        .then((response) => {
+            if (!response.ok) {
+                const json = response.json();
+                props.messageHandler({message: json.message, type:'danger'});
+            }
         });
 
         setItem({
@@ -55,9 +62,15 @@ const ListItem = (props) => {
         // Check if item is new item not registered in the database.
 
         if (id) {
-            await fetch(apiAddress + "/deleteItemById/" + String(id), {
+            const response = await fetch(apiAddress + "/deleteItemById/" + String(id), {
                 method: "DELETE"
             });
+
+            if (!response.ok) {
+                const data = await response.json();
+                eventBus.dispatch("error", {message: data.message, type:'danger'});
+                return;
+            }
         }
         
         props.deleteHandler(id);
@@ -78,6 +91,11 @@ const ListItem = (props) => {
         // Retrieve new Image
         const response = await fetch(apiAddress + "/getItemById/" + id);
         const data = await response.json();
+
+        if (!response.ok) {
+            eventBus.dispatch("error", {message: data.message, type:'danger'});
+            return;
+        }
         
         setEditMode(false);
 
@@ -103,6 +121,7 @@ const ListItem = (props) => {
 
     const finishEdit = async () => {
         if (name === '') {
+            eventBus.dispatch("error", {message: "Please fill in a name.", type:'danger'});
             return;
         }
 
@@ -115,6 +134,11 @@ const ListItem = (props) => {
             });
             const data = await response.json();
 
+            if (!response.ok) {
+                eventBus.dispatch("error", {message: data.message, type:'danger'});
+                return;
+            }
+
             setItem({
                 ...item,
                 id: data.id
@@ -123,14 +147,19 @@ const ListItem = (props) => {
             props.addHandler({
                 ...item,
                 id: data.id
-            });
+            }, props.listId);
         } else {
-            // No need to wait here
-            await fetch(apiAddress + "/updateItem", {
+            const response = await fetch(apiAddress + "/updateItem", {
                 method: "POST",
                 headers: {"content-type": "application/json"},
                 body: JSON.stringify({ id: id, name: name, details: details})
             });
+
+            if (!response.ok) {
+                const data = response.json();
+                eventBus.dispatch("error", {message: data.message, type:'danger'});
+                return;
+            }
         }
 
         setEditMode(false);
@@ -140,6 +169,11 @@ const ListItem = (props) => {
         if (item.id) {
             const response = await fetch(apiAddress + "/getItemById/" + id);
             const data = await response.json();
+
+            if (!response.ok) {
+                eventBus.dispatch("error", {message: data.message, type:'danger'});
+                return;
+            }
 
             setItem(data);
         }
