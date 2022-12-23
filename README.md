@@ -2,9 +2,15 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## api address can be configured through src/config/api.js
+
 ## Available Scripts
 
 In the project directory, you can run:
+
+### 'npm install'
+
+Installs all the required packages for this application.
 
 ### `npm start`
 
